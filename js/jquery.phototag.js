@@ -15,7 +15,7 @@
 	$.fn.photoTag = function( options ){
 		
 		var defaultOptions = {
-			requesTagstUrl: 'photo-tags.php',
+			requestTagsUrl: 'photo-tags.php',
 			deleteTagsUrl: 'delete.php',
 			addTagUrl: 'add-tag.php',
 			parametersForNewTag: {
@@ -391,7 +391,7 @@
 			
 			if( !$.isFunction(options.beforeTagRequest) || options.beforeTagRequest(parameters) ){
 				$.getJSON(
-					options.requesTagstUrl,
+					options.requestTagsUrl,
 					parameters,
 					function( response ){
 						if(response.result != undefined && !response.result){
