@@ -412,4 +412,4 @@
 		
 		return this;
 	};
-})(jQuery);
+})(jQuery);	
