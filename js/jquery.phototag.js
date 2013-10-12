@@ -7,13 +7,13 @@
  * Dual licensed under the MIT and GPL licenses:
  *   http://www.opensource.org/licenses/mit-license.php
  *
- * Revision: 
+ * Revision:
 */
 
 (function($) {
-	
+
 	$.fn.photoTag = function( options ){
-		
+
 		var defaultOptions = {
 			requestTagsUrl: 'photo-tags.php',
 			deleteTagsUrl: 'delete.php',
@@ -23,7 +23,7 @@
 					parameterKey: 'name',
 					isAutocomplete: true,
 					autocompleteUrl: 'names.php',
-					label: 'Name'					
+					label: 'Name'
 				}
 			},
 			parametersForRequest : ['image-id','album-id'],
@@ -73,23 +73,23 @@
 			manageError: 'internal function, user can bind a new one. function(response)',
 			beforeTagRequest: 'bind by user, function( parameters )'
 		};
-		
+
 		var cache = {
 			tags: {}
 		};
-			
-		var options = $.extend(true,defaultOptions,options);
-		
+
+		var options = $.extend({},defaultOptions,options);
+
 		var getParametersForImage = function( imageElement ){
 			var parameters = {};
-			$.each(options.parametersForRequest,function( i, key){
+			$.each(options.parametersForRequest,function(i, key){
 				var parameterValue = imageElement.attr('data-'+key);
 				if(parameterValue)
 					parameters[key] = parameterValue;
 			});
 			return parameters;
 		};
-		
+
 		var registerEventsForTagBox = function( tagBox ){
 			tagBox.mouseover(
 				function(){
@@ -106,7 +106,7 @@
 			});
 
 		};
-		
+
 		var manageError = function( response ){
 			if( $.isFunction(options.manageError) )
 				options.manageError(response);
@@ -115,9 +115,9 @@
 					alert(response.message);
 				else
 					alert(options.literals.communicationProblem);
-			}	
+			}
 		};
-		
+
 		var registerEventsForDeleteLink = function( link, image ){
 			link.click(
 				function(e){
@@ -136,7 +136,7 @@
 				}
 			);
 		}
-		
+
 		var registerEventsForAddTagLink = function( link, image, image_id ){
 			$(link).click(function(e){
 				e.preventDefault();
@@ -147,7 +147,7 @@
 				}
 			});
 		};
-		
+
 		var dragOrResizeEventHandler = function( e, ui ){
 			var tagPosition = $(this).position();
 			var x = tagPosition.left;
@@ -160,7 +160,7 @@
 				});
 			}
 		}
-		
+
 		var prepareTempTagBox = function( tempTagBox, image, image_id ){
 			tempTagBox.draggable({
 				containment: image,
@@ -177,7 +177,7 @@
 			});
 			createNewTagForm(tempTagBox,image,image_id);
 		};
-		
+
 		var createNewTagForm = function( tempTagBox, image, image_id ){
 			var form = $('<form id="tempNewTagForm" action="'+options.addTagUrl+'"></form>');
 			var newTagFormBox = $('<div id="tempTagBoxForm" class="photoTagForm"></div>');
@@ -243,14 +243,14 @@
 				removeNewTempTag();
 				showAllTags(image_id);
 			});
-					
+
 		};
-		
+
 		var removeNewTempTag = function(){
 			$('#'+options.tag.idPrefix+'temp').remove();
 			$('#tempTagBoxForm').remove();
 		};
-		
+
 		var createTagBox = function( tagId, dimension, position, opacity ){
 			var tagBox = $('<div class="'+ options.tag.cssClass +'" id="' + options.tag.idPrefix + tagId +'"></div>');
 			var css = {
@@ -264,7 +264,7 @@
 			tagBox.css(css);
 			return tagBox
 		};
-		
+
 		var createTagBoxFromJSON = function( tagJSON, image ){
 			if( !(tagJSON.height && tagJSON.width) ){
 				tagJSON.height = options.tag.defaultHeight;
@@ -284,7 +284,7 @@
 			};
 			return tagBox;
 		}
-		
+
 		var createTagItemForList = function( tagJSON, image ){
 			var item = $('<li></li>');
 			if(tagJSON.url){
@@ -302,7 +302,7 @@
 			}
 			return item;
 		}
-		
+
 		var createTempTag = function( image, image_id ){
 			var dimension = {width: options.tag.defaultWidth,height: options.tag.defaultHeight};
 			var position = {
@@ -313,26 +313,26 @@
 			var tempTagBox = createTagBox('temp',dimension,position,1);
 			return tempTagBox;
 		};
-		
+
 		var hideAllTags = function( image_id ){
 			$.each(cache.tags[image_id],function(){
 				$(this).css({'opacity':0.0});
 				$(this).hide();
 			});
 		};
-		
+
 		var showAllTags = function( image_id ){
 			$.each(cache.tags[image_id],function(){
 				$(this).show();
 			});
 		}
-		
+
 		var createAddTagLink = function( image, image_id ){
 			var addTagLink = $('<a id="'+ options.imageWrapBox.addNewLinkIdPrefix + image_id + '" href="#" class="">'+ options.literals.addNewTag +'</a>');
 			registerEventsForAddTagLink(addTagLink,image,image_id);
 			return addTagLink;
 		};
-		
+
 		var wrapImage = function( image, image_id ){
 			var imageHeight = image.height();
 			var imageWidth = image.width();
@@ -357,7 +357,7 @@
 				$('#' + options.imageWrapBox.canvasIdPrefix + image_id).parent().append(tagList);
 			}
 		}
-		
+
 		var extendTagBoxAttributes = function( tagBox, tagJSON, image, image_id ){
 			if(options.tag.flashAfterCreation){
 				$(tagBox).css({'opacity':1.0});
@@ -371,7 +371,7 @@
 				$('#'+options.imageWrapBox.tagListIdPrefix+image_id).append(tagItemForList);
 			};
 		}
-		
+
 		var prepareImage = function( imageDetailsJSON, image ){
 			wrapImage(image,imageDetailsJSON.id);
 			var cachedInstance = cache.tags[imageDetailsJSON.id] = {};
@@ -382,13 +382,13 @@
 				extendTagBoxAttributes(tagBox,this,image,imageDetailsJSON.id);
 			});
 		};
-				
+
 		this.each(function(){
-			
+
 			var $this = $(this);
-			
+
 			var parameters = getParametersForImage($this);
-			
+
 			if( !$.isFunction(options.beforeTagRequest) || options.beforeTagRequest(parameters) ){
 				$.getJSON(
 					options.requestTagsUrl,
@@ -399,7 +399,7 @@
 							return;
 						}
 						if(response.options){
-							options = $.extend(true,options,response.options);
+							options = $.extend({},options,response.options);
 						}
 						$.each(response.Image,function(){
 							prepareImage(this,$this);
@@ -409,7 +409,7 @@
 			}
 
 		});
-		
+
 		return this;
 	};
-})(jQuery);	
+})(jQuery);
